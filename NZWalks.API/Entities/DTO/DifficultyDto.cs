@@ -1,6 +1,6 @@
-﻿namespace NZWalks.API.Entities
+﻿namespace NZWalks.API.Entities.DTO
 {
-    public class Difficulty
+    public class DifficultyDto
     {
         public Guid Id { get; set; }
         public string Level { get; set; } = string.Empty;

@@ -24,6 +24,22 @@ namespace NZWalks.API.Controllers
             _mapper = mapper;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var regionDomain = _mapper.Map<Region>(addRegionRequestDto);
+
+                await _regionRepository.CreateAsync(regionDomain);
+
+                var regionDto = _mapper.Map<RegionDto>(regionDomain);
+
+                return CreatedAtAction(nameof(Get), new { id = regionDto.Id }, regionDto);
+            }
+            return BadRequest(addRegionRequestDto);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -42,22 +58,6 @@ namespace NZWalks.API.Controllers
             }
             var regionDto = _mapper.Map<RegionDto>(regionDomain);
             return Ok(regionDto);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
-        {
-            if (ModelState.IsValid)
-            {
-                var regionDomain = _mapper.Map<Region>(addRegionRequestDto);
-
-                await _regionRepository.CreateAsync(regionDomain);
-
-                var regionDto = _mapper.Map<RegionDto>(regionDomain);
-
-                return CreatedAtAction(nameof(Get), new { id = regionDto.Id }, regionDto);
-            }
-            return BadRequest(addRegionRequestDto);
         }
 
         [HttpPut]

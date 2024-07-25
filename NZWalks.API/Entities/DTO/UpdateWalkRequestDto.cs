@@ -1,8 +1,7 @@
-﻿namespace NZWalks.API.Entities
+﻿namespace NZWalks.API.Entities.DTO
 {
-    public class Walk
+    public class UpdateWalkRequestDto
     {
-        public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double LengthInKm { get; set; }
@@ -10,9 +9,5 @@
         // Foreign Keys
         public Guid RegionId { get; set; }
         public Guid DifficultyId { get; set; }
-
-        // Navigation Properties
-        public Region Region { get; set; }
-        public Difficulty Difficulty { get; set; }
     }
 }
