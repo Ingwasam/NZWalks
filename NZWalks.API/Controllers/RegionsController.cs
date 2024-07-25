@@ -12,12 +12,10 @@ namespace NZWalks.API.Controllers
     [ApiController]
     public class RegionsController : ControllerBase
     {
-        private readonly DataContext _dataContext;
         private readonly IRegionRepository _regionRepository;
 
-        public RegionsController(DataContext dataContext, IRegionRepository regionRepository)
+        public RegionsController(IRegionRepository regionRepository)
         {
-            _dataContext = dataContext;
             _regionRepository = regionRepository;
         }
 
