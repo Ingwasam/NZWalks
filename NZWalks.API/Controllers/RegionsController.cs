@@ -64,27 +64,32 @@ namespace NZWalks.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-            var regionDomain = new Region
+            if (ModelState.IsValid)
             {
-                Code = updateRegionRequestDto.Code,
-                Name = updateRegionRequestDto.Name,
-                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
-            };
-            regionDomain = await _regionRepository.UpdateAsync(id, regionDomain);
+                var regionDomain = new Region
+                {
+                    Code = updateRegionRequestDto.Code,
+                    Name = updateRegionRequestDto.Name,
+                    RegionImageUrl = updateRegionRequestDto.RegionImageUrl
+                };
+                regionDomain = await _regionRepository.UpdateAsync(id, regionDomain);
 
-            if (regionDomain == null)
-            {
-                return NotFound();
+                if (regionDomain == null)
+                {
+                    return NotFound();
+                }
+
+                var regionDto = new RegionDto
+                {
+                    Id = regionDomain.Id,
+                    Code = regionDomain.Code,
+                    Name = regionDomain.Name,
+                    RegionImageUrl = regionDomain.RegionImageUrl
+                };
+                return Ok();
             }
-
-            var regionDto = new RegionDto
-            {
-                Id = regionDomain.Id,
-                Code = regionDomain.Code,
-                Name = regionDomain.Name,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
-            return Ok();
+            return BadRequest(ModelState);
+            
         }
 
         [HttpDelete]
