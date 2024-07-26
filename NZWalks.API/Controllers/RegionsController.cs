@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
 using NZWalks.API.Entities;
 using NZWalks.API.Entities.DTO;
+using NZWalks.API.Helpers;
 using NZWalks.API.Repository;
 
 namespace NZWalks.API.Controllers
@@ -41,9 +42,9 @@ namespace NZWalks.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] RegionQueryObject query)
         {
-            var regionsDomain = await _regionRepository.GetAllAsync();
+            var regionsDomain = await _regionRepository.GetAllAsync(query);
             var regionDto = _mapper.Map<List<RegionDto>>(regionsDomain);
             return Ok(regionsDomain);
         }
