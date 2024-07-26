@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
 using NZWalks.API.Entities;
+using NZWalks.API.Helpers;
 
 namespace NZWalks.API.Repository
 {
@@ -19,25 +20,23 @@ namespace NZWalks.API.Repository
             return walk;
         }
 
-        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
-            string? sortBy = null, bool isAscending = true,
-            int pageNumber = 1, int pageSize = 100)
+        public async Task<List<Walk>> GetAllAsync(WalkQueryObject query)
         {
             var walksDomain = _dataContext.Walks.Include("Difficulty").Include("Region").AsQueryable();
 
             //Filtering
-            if (!string.IsNullOrWhiteSpace(filterOn) && !string.IsNullOrWhiteSpace(filterQuery))
+            if (!string.IsNullOrWhiteSpace(query.FilterOn) && !string.IsNullOrWhiteSpace(query.FilterQuery))
             {
-                if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                if (query.FilterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
                 {
-                    walksDomain = walksDomain.Where(x => x.Name.Contains(filterQuery));
+                    walksDomain = walksDomain.Where(x => x.Name.Contains(query.FilterQuery));
                 }
-                else if (filterOn.Equals("Length", StringComparison.OrdinalIgnoreCase))
+                else if (query.FilterOn.Equals("Length", StringComparison.OrdinalIgnoreCase))
                 {
                     // Handle conditions for Length filtering
                     char[] comparisonOperators = new[] { '>', '<', '=' };
-                    string operatorString = new string(filterQuery.TakeWhile(c => comparisonOperators.Contains(c)).ToArray());
-                    string lengthString = filterQuery.Substring(operatorString.Length).Trim();
+                    string operatorString = new string(query.FilterQuery.TakeWhile(c => comparisonOperators.Contains(c)).ToArray());
+                    string lengthString = query.FilterQuery.Substring(operatorString.Length).Trim();
 
                     if (double.TryParse(lengthString, out double length))
                     {
@@ -70,22 +69,22 @@ namespace NZWalks.API.Repository
             }
 
             // Sorting
-            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            if (string.IsNullOrWhiteSpace(query.SoryBy) == false)
             {
-                if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                if (query.SoryBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
                 {
-                    walksDomain = isAscending ? walksDomain.OrderBy(x => x.Name) : walksDomain.OrderByDescending(x => x.Name);
+                    walksDomain = query.IsAscending ? walksDomain.OrderBy(x => x.Name) : walksDomain.OrderByDescending(x => x.Name);
                 }
-                else if (sortBy.Equals("Length", StringComparison.OrdinalIgnoreCase))
+                else if (query.SoryBy.Equals("Length", StringComparison.OrdinalIgnoreCase))
                 {
-                    walksDomain = isAscending ? walksDomain.OrderBy(x => x.LengthInKm) : walksDomain.OrderByDescending(x => x.LengthInKm);
+                    walksDomain = query.IsAscending ? walksDomain.OrderBy(x => x.LengthInKm) : walksDomain.OrderByDescending(x => x.LengthInKm);
                 }
             }
 
             // Pagination
-            var skipResults = (pageNumber - 1) * pageSize;
+            var skipResults = (query.PageNumber - 1) * query.PageSize;
 
-            return await walksDomain.Skip(skipResults).Take(pageSize).ToListAsync();
+            return await walksDomain.Skip(skipResults).Take(query.PageSize).ToListAsync();
         }
 
 
